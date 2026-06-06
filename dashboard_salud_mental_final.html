@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Salud Mental Chile</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(180deg,#d8eeff,#eef8ff);
+}
+.header{
+background:linear-gradient(135deg,#003566,#0077b6);
+color:white;
+padding:28px;
+text-align:center;
+}
+.kpis{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:14px;
+padding:16px;
+}
+.kpi,.card{
+background:white;
+border-radius:18px;
+box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+.kpi{padding:18px;text-align:center}
+.kpi h2{margin:0;color:#003566;font-size:2rem}
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+padding:16px;
+}
+.card{padding:12px}
+.full{grid-column:1/-1}
+.plot{height:470px}
+.refs{
+background:#003566;
+color:white;
+padding:24px;
+line-height:1.7;
+}
+.refs a{color:#bfe4ff;word-break:break-all}
+@media(max-width:768px){
+.kpis{grid-template-columns:1fr 1fr}
+.grid{grid-template-columns:1fr}
+.plot{height:520px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>Análisis Comparativo de Listas de Espera en Atención Psiquiátrica en Chile</h1>
+<div>José Best · Tomás Bravo · Valentina Burgos · Sofía Calquin</div>
+<div>Ingeniería Civil en Biomedicina</div>
+</div>
+
+<div class="kpis">
+<div class="kpi"><h2>30.580</h2><div>Total T3 2023</div></div>
+<div class="kpi"><h2>+12,5%</h2><div>Variación total</div></div>
+<div class="kpi"><h2>+7,0%</h2><div>Adultos</div></div>
+<div class="kpi"><h2>+21,2%</h2><div>Infanto‑juvenil</div></div>
+<div class="kpi"><h2>41,3%</h2><div>Participación infanto‑juvenil</div></div>
+</div>
+
+<div class="grid">
+
+<div class="card"><div id="barras" class="plot"></div></div>
+<div class="card"><div id="linea" class="plot"></div></div>
+
+<div class="card"><div id="pie2019" class="plot"></div></div>
+<div class="card"><div id="pie2021" class="plot"></div></div>
+
+<div class="card full"><div id="pie2023" class="plot"></div></div>
+
+<div class="card full"><div id="trimestres" class="plot"></div></div>
+
+<div class="card"><div id="stack" class="plot"></div></div>
+<div class="card"><div id="hallazgos" class="plot"></div></div>
+
+</div>
+
+<div class="refs">
+<h3>Referencias</h3>
+
+<p>
+Ministerio de Salud de Chile. (2019). Ord. N.° 4757. Parte 2 de 2.<br>
+<a href="https://www.minsal.cl/wp-content/uploads/2019/11/ORD-4757.-Parte-2-de-2.pdf" target="_blank">https://www.minsal.cl/wp-content/uploads/2019/11/ORD-4757.-Parte-2-de-2.pdf</a>
+</p>
+
+<p>
+Ministerio de Salud de Chile. (2021). Ord. N.° 3479 DIGERA: Glosa 06.<br>
+<a href="https://www.minsal.cl/wp-content/uploads/2021/11/ORD-3479-DIGERA-Glosa-06.pdf" target="_blank">https://www.minsal.cl/wp-content/uploads/2021/11/ORD-3479-DIGERA-Glosa-06.pdf</a>
+</p>
+
+<p>
+Ministerio de Salud de Chile. (2023). Ord. N.° 3888: Informe Glosa 05, III trimestre 2023.<br>
+<a href="https://www.minsal.cl/wp-content/uploads/2021/05/Ord.-N%C2%B03888-Informe-Glosa-05-III-Trimestre2023.pdf" target="_blank">https://www.minsal.cl/wp-content/uploads/2021/05/Ord.-N%C2%B03888-Informe-Glosa-05-III-Trimestre2023.pdf</a>
+</p>
+</div>
+
+<script>
+const azulOscuro='#003566';
+const azulMedio='#0077b6';
+const azulClaro='#90e0ef';
+
+const layoutBase={
+paper_bgcolor:'rgba(0,0,0,0)',
+plot_bgcolor:'rgba(0,0,0,0)',
+font:{family:'Segoe UI',size:15},
+margin:{l:50,r:20,t:60,b:50},
+legend:{orientation:'h',y:-0.2}
+};
+
+Plotly.newPlot('barras',[
+{x:['2019','2021','2023'],y:[16773,17984,17953],type:'bar',name:'Adulto',marker:{color:azulOscuro}},
+{x:['2019','2021','2023'],y:[10416,8821,12627],type:'bar',name:'Infanto-juvenil',marker:{color:azulMedio}}
+],{...layoutBase,title:'Pacientes en espera (III trimestre)',barmode:'group'});
+
+Plotly.newPlot('linea',[
+{x:['2019','2021','2023'],y:[38.3,32.9,41.3],mode:'lines+markers',name:'Infanto-juvenil'},
+{x:['2019','2021','2023'],y:[61.7,67.1,58.7],mode:'lines+markers',name:'Adulto'}
+],{...layoutBase,title:'Participación porcentual'});
+
+function pie(id,titulo,a,b){
+Plotly.newPlot(id,[{
+type:'pie',
+hole:0.45,
+labels:['Adulto','Infanto-juvenil'],
+values:[a,b],
+textinfo:'label+percent',
+marker:{colors:[azulOscuro,azulClaro]}
+}],{...layoutBase,title:titulo});
+}
+pie('pie2019','Distribución 2019',61.7,38.3);
+pie('pie2021','Distribución 2021',67.1,32.9);
+pie('pie2023','Distribución 2023',58.7,41.3);
+
+Plotly.newPlot('trimestres',[
+{x:['T1','T2','T3','T4'],y:[16476,15695,16773,17452],name:'Adulto 2019'},
+{x:['T1','T3'],y:[17565,17984],name:'Adulto 2021'},
+{x:['T1','T2','T3','T4'],y:[17683,18366,17953,18675],name:'Adulto 2023'},
+{x:['T1','T2','T3','T4'],y:[10125,10230,10416,9863],name:'Infanto 2019'},
+{x:['T1','T2','T3','T4'],y:[8261,8522,8821,8881],name:'Infanto 2021'},
+{x:['T1','T2','T3','T4'],y:[10918,11998,12627,13033],name:'Infanto 2023'}
+],{...layoutBase,title:'Evolución trimestral'});
+
+Plotly.newPlot('stack',[
+{x:['2019','2021','2023'],y:[16773,17984,17953],type:'bar',name:'Adulto'},
+{x:['2019','2021','2023'],y:[10416,8821,12627],type:'bar',name:'Infanto-juvenil'}
+],{...layoutBase,title:'Composición del total',barmode:'stack'});
+
+Plotly.newPlot('hallazgos',[{
+type:'table',
+header:{values:[['Hallazgo'],['Resultado']]},
+cells:{values:[
+['Aumento total','Mayor crecimiento relativo','Participación infanto-juvenil'],
+['+12,5%','+21,2%','38,3% → 41,3%']
+]}
+}],{title:'Hallazgos clave'});
+</script>
+</body>
+</html>
